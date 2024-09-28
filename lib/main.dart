@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'listener_viewmodel.dart';
 
 void main() {
   runApp(MyApp());
+  MultiProvider(
+    providers: [
+      ChangeNotifierProvider( create: (_) => ListenerViewModel()),
+    ],
+    child: MyApp(),
+  )
 }
 
 class MyApp extends StatelessWidget {
