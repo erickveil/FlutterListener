@@ -1,21 +1,19 @@
-//import 'dart:io';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-//import 'package:window_manager/window_manager.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'listener_viewmodel.dart';
 import 'listener_page.dart'; 
 
 void main() async {
-  /*
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
   if (Platform.isWindows) {
-    WindowManager.instance.setMinimumSize(const Size(600, 800));
-    WindowManager.instance.setMaximumSize(const Size(600, 800));
+    WindowManager.instance.setMinimumSize(const Size(400, 800));
+    WindowManager.instance.setMaximumSize(const Size(400, 800));
   }
-  */
 
   runApp(
     MultiProvider(
