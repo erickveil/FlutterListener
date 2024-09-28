@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Socket Listener',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Color.fromARGB(255, 195, 180, 153)
       ),
       home: ListenerPage(), 
     );

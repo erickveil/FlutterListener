@@ -16,6 +16,8 @@ class ListenerPage extends StatelessWidget {
         child: Consumer<ListenerViewModel>(
           builder: (context, viewModel, child) {
             return Column(
+              // minimize the vertical space use
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextField(
@@ -36,13 +38,21 @@ class ListenerPage extends StatelessWidget {
                           viewModel.toggleListener(port);
                         }
                       },
-                      child: Text(viewModel.isListening ? 'Stop Listener' : 'Start Listener'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 162, 210, 234)
+                      ),
+                      child: Text(viewModel.isListening 
+                        ? 'Stop Listener' 
+                        : 'Start Listener'
+                        )
                     ),
                     SizedBox(width: 16.0),
                     Text(
                       viewModel.isListening ? 'Listening...' : 'Stopped',
                       style: TextStyle(
-                        color: viewModel.isListening ? Colors.green : Colors.red,
+                        color: viewModel.isListening 
+                          ? const Color.fromARGB(255, 46, 107, 48) 
+                          : const Color.fromARGB(255, 112, 29, 23),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -51,10 +61,13 @@ class ListenerPage extends StatelessWidget {
                 SizedBox(height: 24.0),
                 Expanded(
                   child: Container(
+                    width: 300,
+                    height: 150,
                     padding: EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(5.0),
+                      color: Color(0xffe6e8fa),
+                      border: Border.all(color: Colors.blueGrey),
+                      borderRadius: BorderRadius.circular(20.0),
                     ),
                     child: SingleChildScrollView(
                       child: Text(
