@@ -9,7 +9,7 @@ void main() {
       ChangeNotifierProvider( create: (_) => ListenerViewModel()),
     ],
     child: MyApp(),
-  )
+  );
 }
 
 class MyApp extends StatelessWidget {
