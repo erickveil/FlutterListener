@@ -8,6 +8,8 @@ import 'listener_viewmodel.dart';
 import 'listener_page.dart'; 
 
 void main() async {
+  // This section sets the starting window size
+  // Weirdly this breaks my `Center` widget and nothing is centered anymore.
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
   if (Platform.isWindows) {

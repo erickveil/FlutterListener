@@ -13,7 +13,7 @@ class ListenerPage extends StatelessWidget {
       //),
       body: Center(
         child: Container(
-          width: 400,
+          width: 350,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Consumer<ListenerViewModel>(
