@@ -8,9 +8,9 @@ class ListenerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Socket Listener'),
-      ),
+      //appBar: AppBar(
+      //  title: Text('Socket Listener'),
+      //),
       body: Center ( 
         child: Padding(
           padding: const EdgeInsets.all(16.0),
