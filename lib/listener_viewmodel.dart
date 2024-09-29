@@ -2,8 +2,17 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 
+// For true MVVM, I should have broken the socket stuff out into its own 
+// Model class, but it's mashed in here because this is a weekend project.
+
 class ListenerViewModel extends ChangeNotifier {
+
+  // I remember the good old days when setting up a socket was PAINFUL, dammit!
+  // The `?` tells us that _serverSocket can be null.
+  // We just declare it here, and will define it later.
   ServerSocket? _serverSocket;
+
+  // Here are our state values! This is where the magic happens.
   bool _isListening = false;
   String _receivedMessages = "";
 
@@ -12,11 +21,21 @@ class ListenerViewModel extends ChangeNotifier {
   String get receivedMessages => _receivedMessages;
 
   // Method to start the socket listener
+  // `Future<void>` tells us this method is async.
+  // A `Future` is a value or error that will be available in the future.
+  // This one is `void` and so will not return anything when it's done.
+  // But we want the async so we don't block the UI while listening.
   Future<void> startListener(int port) async {
     try {
       // Create the server socket and start listening
+      // Here we pause execution until the `bind` is complete.
+      // `await` will block the execution of this function *but not the main
+      // thread* so the UI will not freeze.
+      // Also, we can only await methods that return a Future.
       _serverSocket = await ServerSocket.bind(InternetAddress.anyIPv4, port);
       _isListening = true;
+
+      // We don't append the string here - each new session clears the output box.
       _receivedMessages = "Listening on port $port...\n";
       notifyListeners();
 
