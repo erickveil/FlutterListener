@@ -10,6 +10,95 @@ class ListenerPage extends StatelessWidget {
   final TextEditingController _portController = 
     TextEditingController(text: '50502');
 
+
+  Container createPortInput() {
+    InputDecoration portInputHelperText = InputDecoration(
+      labelText: 'Port Number',
+      border: OutlineInputBorder(),
+    );
+
+    TextField portInputBox = TextField(
+      controller: _portController,
+      keyboardType: TextInputType.number,
+      decoration: portInputHelperText,
+    );
+
+    Container portInputSizingBox = Container(
+      width: 300,
+      child: portInputBox,
+    );
+
+    return portInputSizingBox;
+  }
+
+  Row createControlPanel(ListenerViewModel viewModel) {
+    TextStyle indicatorTextStyle = TextStyle( 
+      color: viewModel.isListening 
+        ? const Color.fromARGB(255, 46, 107, 48) 
+        : const Color.fromARGB(255, 112, 29, 23),
+      fontWeight: FontWeight.bold,
+    );
+
+    Text indicatorText = Text(
+      viewModel.isListening ? 'Listening...' : 'Stopped',
+      style: indicatorTextStyle,
+    );
+
+    // The state declaratively defines the button text:
+    Text listenButtonText = Text(
+      viewModel.isListening ? 'Stop Listener' : 'Start Listener'
+    );
+
+    ButtonStyle listenButtonStyle = ElevatedButton.styleFrom(
+      backgroundColor: const Color.fromARGB(255, 162, 210, 234)
+    );
+
+    ElevatedButton listenButton = ElevatedButton(
+      onPressed: () {
+        if (_portController.text.isNotEmpty) {
+          int port = int.parse(_portController.text);
+          viewModel.toggleListener(port);
+        }
+      },
+      style: listenButtonStyle,
+      child: listenButtonText,
+    );
+
+    Row listenButtonRow = Row(
+      children: [
+        listenButton,
+        SizedBox(width: 16.0),
+        indicatorText,
+      ],
+    );
+
+    return listenButtonRow;
+  }
+
+  Expanded createOutputBox(ListenerViewModel viewModel) {
+    Text outputText = Text(
+      viewModel.receivedMessages,
+      style: TextStyle(fontSize: 16.0)
+    );
+
+    BoxDecoration outputBoxStyle = BoxDecoration(
+      color: Color(0xffe6e8fa),
+      border: Border.all(color: Colors.blueGrey),
+      borderRadius: BorderRadius.circular(20.0),
+    );
+
+    Container outputBox = Container(
+      width: 300,
+      height: 150,
+      padding: EdgeInsets.all(8.0),
+      decoration: outputBoxStyle,
+      // Just in case we get a lot of text in here:
+      child: SingleChildScrollView( child: outputText ),
+    );
+
+    return Expanded(child: outputBox);
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -46,96 +135,27 @@ class ListenerPage extends StatelessWidget {
               //     like set the text and color on the connection indicator.
               // *child* - a widget that doesn't need to be rebuilt (unused).
               builder: (context, viewModel, child) {
-                TextStyle indicatorTextStyle = TextStyle(
-                      color: viewModel.isListening
-                          ? const Color.fromARGB(255, 46, 107, 48)
-                          : const Color.fromARGB(255, 112, 29, 23),
-                      fontWeight: FontWeight.bold,
-                  );
 
-                Text indicatorText = Text(
-                  viewModel.isListening ? 'Listening...' : 'Stopped',
-                  style: indicatorTextStyle,
-                );
-
-                // The state declaratively defines the button text:
-                Text listenButtonText = Text(
-                  viewModel.isListening ? 'Stop Listener' : 'Start Listener'
-                );
-
-                ButtonStyle listenButtonStyle = ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 162, 210, 234)
-                );
-
-                ElevatedButton listenButton = ElevatedButton(
-                  onPressed: () {
-                    if (_portController.text.isNotEmpty) {
-                      int port = int.parse(_portController.text);
-                      viewModel.toggleListener(port);
-                    }
-                  },
-                  style: listenButtonStyle,
-                  child: listenButtonText,
-                );
-
-                Row listenButtonRow = Row(
-                  children: [
-                    listenButton,
-                    SizedBox(width: 16.0),
-                    indicatorText,
-                  ],
-                );
-
-                InputDecoration portInputHelperText = InputDecoration(
-                  labelText: 'Port Number',
-                  border: OutlineInputBorder(),
-                );
-
-                TextField portInputBox = TextField(
-                  controller: _portController,
-                  keyboardType: TextInputType.number,
-                  decoration: portInputHelperText,
-                );
-
-                Container portInputSizingBox = Container(
-                  width: 300,
-                  child: portInputBox,
-                );
-
-                Text outputText = Text(
-                  viewModel.receivedMessages,
-                  style: TextStyle(fontSize: 16.0)
-                );
-
-                BoxDecoration outputBoxStyle = BoxDecoration(
-                  color: Color(0xffe6e8fa),
-                  border: Border.all(color: Colors.blueGrey),
-                  borderRadius: BorderRadius.circular(20.0),
-                );
-
-                Container outputBox = Container(
-                  width: 300,
-                  height: 150,
-                  padding: EdgeInsets.all(8.0),
-                  decoration: outputBoxStyle,
-                  // Just in case we get a lot of text in here:
-                  child: SingleChildScrollView( child: outputText ),
-                );
+                Container portInputBox = createPortInput();
+                Row controlPanel = createControlPanel(viewModel);
+                Expanded outputDataBox = createOutputBox(viewModel);
+                SizedBox spacer = SizedBox(height: 16.0);
 
                 Column pageRootColumn = Column(
                   // minimize the vertical space use
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    portInputSizingBox,
-                    SizedBox(height: 16.0),
-                    listenButtonRow,
-                    SizedBox(height: 24.0),
-                    Expanded( child: outputBox,),
+                    portInputBox,
+                    spacer,
+                    controlPanel,
+                    spacer,
+                    outputDataBox,
                   ],
                 );
 
                 return pageRootColumn;
+
               },
             ),
           ),
