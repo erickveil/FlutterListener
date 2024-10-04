@@ -13,136 +13,153 @@ class ListenerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    Consumer pageBuilder = Consumer<ListenerViewModel>( 
+      builder: _buildListenerPage
+    );
+
+    // Keep elements inside the safe area on mobile.
+    Padding edgeSaver = Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: pageBuilder,
+    );
+
+    Container pageRoot = Container(
+      width: 350,
+      child: edgeSaver,
+    );
+
+    Center pageAlignement = Center ( child: pageRoot );
+    
     // Scaffold is a basic application container that provides a lot of basic
     // Application stuff in its members for free, like an AppBarr or a body.
-    return Scaffold(
-      body: Center(
-
-        // Container and SizeBox are basic layout elements.
-        // Container gives more options. In this case I didn't use any and 
-        // Flutter keeps trying to get me to use the simpler SizeBox instead.
-        child: Container(
-          width: 350,
-
-          // Padding is like a SizeBox, but instead of specifying a size, I 
-          //define its layout by defining the space around `child`.
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-
-            // Another Widget from the Provider package.
-            // Lets me listen and react to changes in our ViewModel (the 
-            // Provider).
-            // Reads values from the Provider and rebuilds the UI when they
-            // change.
-            // Gives us the `builder` method so we can interact with the state.
-            child: Consumer<ListenerViewModel>(
-
-              // *context* - the current build context, lets us access other
-              //     widgets or data from the widget tree. We don't really
-              //     make use of that here.
-              // *viewModel* - an instance of ListenerViewModel - you'll see 
-              //     me use this to check the state before I do things here
-              //     like set the text and color on the connection indicator.
-              // *child* - a widget that doesn't need to be rebuilt (unused).
-              builder: (context, viewModel, child) {
-                return Column(
-                  // minimize the vertical space use
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 300,
-
-                      // This is where we enter the port number.
-                      // A familiar and classic Control - I mean "Widget".
-                      child: TextField(
-                        // Here's where we connect the TextEditingController
-                        // that we defined above.
-                        controller: _portController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Port Number',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16.0),
-
-                    // Row! Just like in Qt/QML!
-                    Row(
-                      children: [
-
-                        // We get to play with different types of button Widgets.
-                        // ElevatedButton has a drop shadow.
-                        ElevatedButton(
-                            onPressed: () {
-
-                              // Here's where we actually use the TextEditingController
-                              // That we defined as a member and assigned to the port
-                              // TextField.
-                              if (_portController.text.isNotEmpty) {
-                                int port = int.parse(_portController.text);
-
-                                // Here we use our ListenerViewModel to turn
-                                // the Listener on and off.
-                                viewModel.toggleListener(port);
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    const Color.fromARGB(255, 162, 210, 234)),
-
-                            // The state declaratively defines the button text:
-                            child: Text(viewModel.isListening
-                                ? 'Stop Listener'
-                                : 'Start Listener')),
-
-                        // Here I construct a custom widget out of other widgets
-                        // like I would in QML - the state is again checked
-                        // and helps define the appearance as it changes.
-                        SizedBox(width: 16.0),
-                        Text(
-                          viewModel.isListening ? 'Listening...' : 'Stopped',
-                          style: TextStyle(
-                            color: viewModel.isListening
-                                ? const Color.fromARGB(255, 46, 107, 48)
-                                : const Color.fromARGB(255, 112, 29, 23),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 24.0),
-
-                    // Expanded lets its child expand to fill the available 
-                    // space - another layout widget.
-                    Expanded(
-                      child: Container(
-                        width: 300,
-                        height: 150,
-                        padding: EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          color: Color(0xffe6e8fa),
-                          border: Border.all(color: Colors.blueGrey),
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-
-                        // Just in case we get a lot of text in here:
-                        child: SingleChildScrollView(
-                          child: Text(
-                            viewModel.receivedMessages,
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-        ),
-      ),
-    );
+    return Scaffold( body: pageAlignement);
   }
+
+  /// Sets up a `Column` arrangement of the full UI content.
+  /// 
+  /// context - the current build context, lets us access other widgets or data 
+  ///   from the widget tree. We don't really make use of that here.
+  /// viewModel - an instance of ListenerViewModel - you'll see me use this to 
+  ///   check the state before I do things here like set the text and color on 
+  ///   the connection indicator.
+  /// child - a widget that doesn't need to be rebuilt (unused).
+  Widget _buildListenerPage(
+    BuildContext context, ListenerViewModel viewModel, Widget? child) {
+
+    Widget portInputBox = _createPortInput();
+    Widget controlPanel = _createControlPanel(viewModel);
+    Widget outputDataBox = _createOutputBox(viewModel);
+    SizedBox spacer = SizedBox(height: 16.0);
+
+    Column pageRootColumn = Column(
+      // minimize the vertical space use
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        portInputBox,
+        spacer,
+        controlPanel,
+        spacer,
+        outputDataBox,
+      ],
+    );
+
+    return pageRootColumn;
+  }
+
+  /// The Input Box for the user to define the listener port.
+  Widget _createPortInput() {
+    InputDecoration portInputHelperText = InputDecoration(
+      labelText: 'Port Number',
+      border: OutlineInputBorder(),
+    );
+
+    TextField portInputBox = TextField(
+      controller: _portController,
+      keyboardType: TextInputType.number,
+      decoration: portInputHelperText,
+    );
+
+    Container portInputSizingBox = Container(
+      width: 300,
+      child: portInputBox,
+    );
+
+    return portInputSizingBox;
+  }
+
+  /// User interface for starting and stopping the listener.
+  /// Includes a button for the user to control the listener and an indicator
+  /// so the user can see if it is running or not.
+  Widget _createControlPanel(ListenerViewModel viewModel) {
+    TextStyle indicatorTextStyle = TextStyle( 
+      color: viewModel.isListening 
+        ? const Color.fromARGB(255, 46, 107, 48) 
+        : const Color.fromARGB(255, 112, 29, 23),
+      fontWeight: FontWeight.bold,
+    );
+
+    Text indicatorText = Text(
+      viewModel.isListening ? 'Listening...' : 'Stopped',
+      style: indicatorTextStyle,
+    );
+
+    // The state declaratively defines the button text:
+    Text listenButtonText = Text(
+      viewModel.isListening ? 'Stop Listener' : 'Start Listener'
+    );
+
+    ButtonStyle listenButtonStyle = ElevatedButton.styleFrom(
+      backgroundColor: const Color.fromARGB(255, 162, 210, 234)
+    );
+
+    ElevatedButton listenButton = ElevatedButton(
+      onPressed: () {
+        if (_portController.text.isNotEmpty) {
+          int port = int.parse(_portController.text);
+          viewModel.toggleListener(port);
+        }
+      },
+      style: listenButtonStyle,
+      child: listenButtonText,
+    );
+
+    Row listenButtonRow = Row(
+      children: [
+        listenButton,
+        SizedBox(width: 16.0),
+        indicatorText,
+      ],
+    );
+
+    return listenButtonRow;
+  }
+
+  /// Displays a box that presents the application's output and information
+  /// to the user. Shows the start/stop state of the listener, as well as 
+  /// any string messages that come through.
+  Widget _createOutputBox(ListenerViewModel viewModel) {
+    Text outputText = Text(
+      viewModel.receivedMessages,
+      style: TextStyle(fontSize: 16.0)
+    );
+
+    BoxDecoration outputBoxStyle = BoxDecoration(
+      color: Color(0xffe6e8fa),
+      border: Border.all(color: Colors.blueGrey),
+      borderRadius: BorderRadius.circular(20.0),
+    );
+
+    Container outputBox = Container(
+      width: 300,
+      height: 150,
+      padding: EdgeInsets.all(8.0),
+      decoration: outputBoxStyle,
+      // Just in case we get a lot of text in here:
+      child: SingleChildScrollView( child: outputText ),
+    );
+
+    return Expanded(child: outputBox);
+  }
+
 }
