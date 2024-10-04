@@ -35,7 +35,40 @@ class ListenerPage extends StatelessWidget {
     return Scaffold( body: pageAlignement);
   }
 
-  Container createPortInput() {
+  /// Sets up a `Column` arrangement of the full UI content.
+  /// 
+  /// context - the current build context, lets us access other widgets or data 
+  ///   from the widget tree. We don't really make use of that here.
+  /// viewModel - an instance of ListenerViewModel - you'll see me use this to 
+  ///   check the state before I do things here like set the text and color on 
+  ///   the connection indicator.
+  /// child - a widget that doesn't need to be rebuilt (unused).
+  Widget _buildListenerPage(
+    BuildContext context, ListenerViewModel viewModel, Widget? child) {
+
+    Widget portInputBox = _createPortInput();
+    Widget controlPanel = _createControlPanel(viewModel);
+    Widget outputDataBox = _createOutputBox(viewModel);
+    SizedBox spacer = SizedBox(height: 16.0);
+
+    Column pageRootColumn = Column(
+      // minimize the vertical space use
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        portInputBox,
+        spacer,
+        controlPanel,
+        spacer,
+        outputDataBox,
+      ],
+    );
+
+    return pageRootColumn;
+  }
+
+  /// The Input Box for the user to define the listener port.
+  Widget _createPortInput() {
     InputDecoration portInputHelperText = InputDecoration(
       labelText: 'Port Number',
       border: OutlineInputBorder(),
@@ -55,7 +88,10 @@ class ListenerPage extends StatelessWidget {
     return portInputSizingBox;
   }
 
-  Row createControlPanel(ListenerViewModel viewModel) {
+  /// User interface for starting and stopping the listener.
+  /// Includes a button for the user to control the listener and an indicator
+  /// so the user can see if it is running or not.
+  Widget _createControlPanel(ListenerViewModel viewModel) {
     TextStyle indicatorTextStyle = TextStyle( 
       color: viewModel.isListening 
         ? const Color.fromARGB(255, 46, 107, 48) 
@@ -99,7 +135,10 @@ class ListenerPage extends StatelessWidget {
     return listenButtonRow;
   }
 
-  Expanded createOutputBox(ListenerViewModel viewModel) {
+  /// Displays a box that presents the application's output and information
+  /// to the user. Shows the start/stop state of the listener, as well as 
+  /// any string messages that come through.
+  Widget _createOutputBox(ListenerViewModel viewModel) {
     Text outputText = Text(
       viewModel.receivedMessages,
       style: TextStyle(fontSize: 16.0)
@@ -123,33 +162,4 @@ class ListenerPage extends StatelessWidget {
     return Expanded(child: outputBox);
   }
 
-  /// context - the current build context, lets us access other widgets or data 
-  ///   from the widget tree. We don't really make use of that here.
-  /// viewModel - an instance of ListenerViewModel - you'll see me use this to 
-  ///   check the state before I do things here like set the text and color on 
-  ///   the connection indicator.
-  /// child - a widget that doesn't need to be rebuilt (unused).
-  Widget _buildListenerPage(
-    BuildContext context, ListenerViewModel viewModel, Widget? child) {
-
-    Container portInputBox = createPortInput();
-    Row controlPanel = createControlPanel(viewModel);
-    Expanded outputDataBox = createOutputBox(viewModel);
-    SizedBox spacer = SizedBox(height: 16.0);
-
-    Column pageRootColumn = Column(
-      // minimize the vertical space use
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        portInputBox,
-        spacer,
-        controlPanel,
-        spacer,
-        outputDataBox,
-      ],
-    );
-
-    return pageRootColumn;
-  }
 }
