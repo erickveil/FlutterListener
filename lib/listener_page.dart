@@ -23,7 +23,7 @@ class ListenerPage extends StatelessWidget {
       child: pageBuilder,
     );
 
-    Container pageRoot = Container(
+    SizedBox pageRoot = SizedBox(
       width: 350,
       child: edgeSaver,
     );
@@ -80,7 +80,7 @@ class ListenerPage extends StatelessWidget {
       decoration: portInputHelperText,
     );
 
-    Container portInputSizingBox = Container(
+    SizedBox portInputSizingBox = SizedBox(
       width: 300,
       child: portInputBox,
     );
